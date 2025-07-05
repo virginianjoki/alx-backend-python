@@ -3,42 +3,37 @@ import mysql.connector
 
 def stream_users_in_batches(batch_size):
     """
-    Generator that yields user records in batches from the MySQL database.
+    Generator that yields rows in batches from user_data table.
+    Each batch is a list of dicts with batch_size items (or fewer on the last batch).
     """
-    try:
-        connection = mysql.connector.connect(
-            host="localhost",
-            user="root",
-            password="your_mysql_password",
-            database="ALX_prodev"
-        )
-        cursor = connection.cursor(dictionary=True)
-        cursor.execute("SELECT * FROM user_data")
+    connection = mysql.connector.connect(
+        host='localhost',
+        user='your_mysql_user',
+        password='your_mysql_password',
+        database='ALX_prodev'
+    )
+    cursor = connection.cursor(dictionary=True)
+    cursor.execute("SELECT * FROM user_data")
 
-        batch = []
-        for row in cursor:
-            batch.append(row)
-            if len(batch) == batch_size:
-                yield batch
-                batch = []
-
-        if batch:
+    batch = []
+    for row in cursor:  # 1st loop
+        batch.append(row)
+        if len(batch) == batch_size:
             yield batch
+            batch = []
+    if batch:
+        yield batch
 
-    except mysql.connector.Error as err:
-        print(f"Database error: {err}")
-    finally:
-        if cursor:
-            cursor.close()
-        if connection:
-            connection.close()
+    cursor.close()
+    connection.close()
 
 
 def batch_processing(batch_size):
     """
-    Processes each batch and prints users older than 25.
+    Processes each batch by filtering users over the age of 25.
+    Yields a filtered list of users from each batch.
     """
-    for batch in stream_users_in_batches(batch_size):  # Loop 1
-        for user in batch:  # Loop 2
-            if user['age'] > 25:
-                print(user)
+    for batch in stream_users_in_batches(batch_size):  # 2nd loop
+        filtered = [user for user in batch if float(
+            user['age']) > 25]  # 3rd loop
+        yield filtered

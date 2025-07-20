@@ -2,14 +2,12 @@
 """
 Unit and integration tests for GithubOrgClient.
 """
-from fixtures import TEST_PAYLOAD
-from parameterized import parameterized, parameterized_class
-from unittest.mock import patch, PropertyMock, Mock
+
 import unittest
+from unittest.mock import patch, PropertyMock, Mock
+from parameterized import parameterized, parameterized_class
 from client import GithubOrgClient
-import sys
-import os
-sys.path.append(os.path.dirname(os.path.dirname(__file__)))
+from fixtures import TEST_PAYLOAD
 
 
 class TestGithubOrgClient(unittest.TestCase):
@@ -32,7 +30,9 @@ class TestGithubOrgClient(unittest.TestCase):
     def test_public_repos_url(self):
         """Test _public_repos_url returns correct URL"""
         with patch.object(
-            GithubOrgClient, "org", new_callable=PropertyMock
+            GithubOrgClient,
+            "org",
+            new_callable=PropertyMock
         ) as mock_org:
             mock_org.return_value = {
                 "repos_url": "https://api.github.com/orgs/test/repos"
@@ -52,7 +52,9 @@ class TestGithubOrgClient(unittest.TestCase):
             {"name": "repo2"}
         ]
         with patch.object(
-            GithubOrgClient, "_public_repos_url", new_callable=PropertyMock
+            GithubOrgClient,
+            "_public_repos_url",
+            new_callable=PropertyMock
         ) as mock_url:
             mock_url.return_value = "https://api.github.com/orgs/test/repos"
             client = GithubOrgClient("test")

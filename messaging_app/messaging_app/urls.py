@@ -21,25 +21,16 @@ from django.contrib import admin
 from django.urls import path, include
 from rest_framework import routers
 from chats.views import ConversationViewSet, MessageViewSet
+
+
 router = routers.DefaultRouter()
 router.register(r'conversations', ConversationViewSet, basename='conversation')
-router.register(r'messages', MessageViewSet, basename='message')
-# Define the API settings
-REST_FRAMEWORK = {
-    'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.IsAuthenticated',
-    ],
-    'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.SessionAuthentication',
-        'rest_framework.authentication.BasicAuthentication',
-    ],
-    'DEFAULT_FILTER_BACKENDS': [
-        'rest_framework.filters.SearchFilter',
-        'rest_framework.filters.OrderingFilter',
-    ],
-    'SEARCH_PARAM': 'search',
-    'ORDERING_PARAM': 'ordering',
-}
+
+convo_router = routers.NestedDefaultRouter(
+    router, r'conversations', lookup='conversation')
+convo_router.register(r'messages', MessageViewSet,
+                      basename='conversation-messages')
+
 
 # URL patterns for the project
 
@@ -47,4 +38,5 @@ REST_FRAMEWORK = {
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('chats.urls')),
+    path('api/', include(convo_router.urls)),
 ]

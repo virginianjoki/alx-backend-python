@@ -21,7 +21,6 @@ Unit tests for utils module.
 import unittest
 from parameterized import parameterized
 from unittest.mock import patch, Mock
-
 from utils import access_nested_map, get_json, memoize
 
 
@@ -86,13 +85,8 @@ class TestMemoize(unittest.TestCase):
             def a_property(self):
                 return self.a_method()
 
-        with patch.object(
-            TestClass, "a_method", return_value=42
-        ) as mock_method:
+        with patch.object(TestClass, "a_method", return_value=42) as mock_method:
             obj = TestClass()
-            result1 = obj.a_property()
-            result2 = obj.a_property()
-
-            self.assertEqual(result1, 42)
-            self.assertEqual(result2, 42)
+            self.assertEqual(obj.a_property(), 42)
+            self.assertEqual(obj.a_property(), 42)
             mock_method.assert_called_once()

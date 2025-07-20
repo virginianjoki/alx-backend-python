@@ -2,12 +2,14 @@
 """
 Unit and integration tests for GithubOrgClient.
 """
-
-import unittest
-from unittest.mock import patch, PropertyMock, Mock
-from parameterized import parameterized, parameterized_class
-from client import GithubOrgClient
 from fixtures import TEST_PAYLOAD
+from parameterized import parameterized, parameterized_class
+from unittest.mock import patch, PropertyMock, Mock
+import unittest
+from client import GithubOrgClient
+import sys
+import os
+sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
 
 class TestGithubOrgClient(unittest.TestCase):

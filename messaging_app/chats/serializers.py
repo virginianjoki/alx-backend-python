@@ -1,5 +1,4 @@
 from rest_framework import serializers
-from rest_framework.exceptions import ValidationError
 from .models import User, Conversation, Message
 
 
@@ -29,7 +28,7 @@ class MessageSerializer(serializers.ModelSerializer):
     """
     sender = UserSerializer(read_only=True)
     sender_id = serializers.UUIDField(write_only=True)
-    message_body = serializers.CharField(max_length=None)
+    message_body = serializers.CharField()
 
     class Meta:
         model = Message
@@ -44,7 +43,6 @@ class MessageSerializer(serializers.ModelSerializer):
         read_only_fields = ('message_id', 'sent_at')
 
     def create(self, validated_data):
-        # Ensure sender_id corresponds to a real user
         sender_id = validated_data.pop('sender_id')
         validated_data['sender_id'] = sender_id
         return super().create(validated_data)
@@ -77,14 +75,12 @@ class ConversationSerializer(serializers.ModelSerializer):
         read_only_fields = ('conversation_id', 'created_at', 'message_count')
 
     def validate_participant_ids(self, value):
-        # Validate at least two participants
         if not isinstance(value, list) or len(value) < 2:
-            raise ValidationError(
+            raise serializers.ValidationError(
                 'A conversation requires at least two participants.')
         return value
 
     def get_message_count(self, obj):
-        # Return the total number of messages in the conversation
         return obj.messages.count()
 
     def create(self, validated_data):

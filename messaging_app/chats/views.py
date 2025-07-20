@@ -1,7 +1,5 @@
-from django.shortcuts import render
-
-# Create your views here.
-from rest_framework import viewsets, permissions
+from rest_framework import viewsets, permissions, status, filters
+from rest_framework.response import Response
 from .models import Conversation, Message
 from .serializers import ConversationSerializer, MessageSerializer
 
@@ -18,6 +16,18 @@ class ConversationViewSet(viewsets.ModelViewSet):
     queryset = Conversation.objects.all()
     serializer_class = ConversationSerializer
     permission_classes = [permissions.IsAuthenticated]
+    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
+    search_fields = ['participants__email']
+    ordering_fields = ['created_at']
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        conversation = serializer.save()
+        return Response(
+            ConversationSerializer(conversation).data,
+            status=status.HTTP_201_CREATED
+        )
 
 
 class MessageViewSet(viewsets.ModelViewSet):
@@ -32,10 +42,18 @@ class MessageViewSet(viewsets.ModelViewSet):
     queryset = Message.objects.all()
     serializer_class = MessageSerializer
     permission_classes = [permissions.IsAuthenticated]
+    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
+    search_fields = ['body', 'sender__email']
+    ordering_fields = ['sent_at']
 
     def perform_create(self, serializer):
-        # Associates the message sender to the authenticated user if not provided
-        if 'sender_id' not in serializer.validated_data:
-            serializer.save(sender=self.request.user)
-        else:
-            serializer.save()
+        serializer.save(sender=self.request.user)
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        message = serializer.save(sender=request.user)
+        return Response(
+            MessageSerializer(message).data,
+            status=status.HTTP_201_CREATED
+        )

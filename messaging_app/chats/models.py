@@ -1,5 +1,3 @@
-from django.db import models
-
 # Create your models here.
 import uuid
 from django.conf import settings
@@ -12,13 +10,14 @@ class User(AbstractUser):
     Custom user model extending Django's AbstractUser.
 
     Attributes:
-        id (UUID): Primary key for the user.
+        user_id (UUID): Primary key for the user.
         email (str): Unique email address for the user.
+        password (str): Hashed password for the user (inherited from AbstractUser).
         phone_number (str): Optional contact number.
         role (str): User role - guest, host, or admin.
         created_at (datetime): Timestamp when the user was created.
     """
-    id = models.UUIDField(
+    user_id = models.UUIDField(
         primary_key=True,
         default=uuid.uuid4,
         editable=False,
@@ -52,11 +51,11 @@ class Conversation(models.Model):
     Model representing a conversation between users.
 
     Attributes:
-        id (UUID): Primary key for the conversation.
+        conversation_id (UUID): Primary key for the conversation.
         participants (ManyToMany): Users involved in the conversation.
         created_at (datetime): Timestamp when conversation was created.
     """
-    id = models.UUIDField(
+    conversation_id = models.UUIDField(
         primary_key=True,
         default=uuid.uuid4,
         editable=False,
@@ -70,7 +69,7 @@ class Conversation(models.Model):
 
     def __str__(self):
         users = ", ".join([u.email for u in self.participants.all()])
-        return f"Conversation {self.id} between: {users}"
+        return f"Conversation {self.conversation_id} between: {users}"
 
 
 class Message(models.Model):
@@ -78,13 +77,13 @@ class Message(models.Model):
     Model representing a message sent by a user within a conversation.
 
     Attributes:
-        id (UUID): Primary key for the message.
+        message_id (UUID): Primary key for the message.
         sender (ForeignKey): The user who sent the message.
         conversation (ForeignKey): The conversation the message belongs to.
-        body (str): The text content of the message.
+        message_body (str): The text content of the message.
         sent_at (datetime): Timestamp when the message was sent.
     """
-    id = models.UUIDField(
+    message_id = models.UUIDField(
         primary_key=True,
         default=uuid.uuid4,
         editable=False,
@@ -100,8 +99,8 @@ class Message(models.Model):
         on_delete=models.CASCADE,
         related_name='messages'
     )
-    body = models.TextField(null=False)
+    message_body = models.TextField(null=False)
     sent_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"Message {self.id} from {self.sender.email} at {self.sent_at}"
+        return f"Message {self.message_id} from {self.sender.email} at {self.sent_at}"

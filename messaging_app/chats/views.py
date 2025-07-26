@@ -7,8 +7,10 @@ from django.shortcuts import get_object_or_404
 from rest_framework.generics import RetrieveAPIView
 from .permissions import IsMessageOwner
 from rest_framework.views import APIView
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import permissions
 from .permissions import IsParticipantOfConversation
+from .filters import MessageFilter
 
 
 class MessageDetailView(RetrieveAPIView):
@@ -22,14 +24,24 @@ class YourMessageView(APIView):
     ...
 
 
-class MessageViewSet(viewsets.ModelViewSet):
-    queryset = Message.objects.all()
-    serializer_class = MessageSerializer
-    permission_classes = [IsAuthenticated, IsParticipantOfConversation]
+# class MessageViewSet(viewsets.ModelViewSet):
+#     queryset = Message.objects.all()
+#     serializer_class = MessageSerializer
+#     permission_classes = [IsAuthenticated, IsParticipantOfConversation]
 
-    def get_queryset(self):
-        # Filter only messages from conversations the user is part of
-        return Message.objects.filter(conversation__participants=self.request.user)
+#     filter_backends = [
+#         filters.SearchFilter,
+#         filters.OrderingFilter,
+#         DjangoFilterBackend  # <-- important!
+#     ]
+
+#     filterset_class = MessageFilter
+#     search_fields = ['body', 'sender__email']
+#     ordering_fields = ['sent_at']
+
+#     def get_queryset(self):
+#         # Filter only messages from conversations the user is part of
+#         return Message.objects.filter(conversation__participants=self.request.user)
 
 
 class ConversationViewSet(viewsets.ModelViewSet):
@@ -73,6 +85,16 @@ class MessageViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         # Only return messages in conversations the user is a participant of
         return Message.objects.filter(conversation__participants=self.request.user)
+
+    filter_backends = [
+        filters.SearchFilter,
+        filters.OrderingFilter,
+        DjangoFilterBackend  # <-- important!
+    ]
+
+    filterset_class = MessageFilter
+    search_fields = ['body', 'sender__email']
+    ordering_fields = ['sent_at']
 
     def perform_create(self, serializer):
         conversation_id = self.request.data.get("conversation")

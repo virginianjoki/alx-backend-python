@@ -67,8 +67,10 @@ REST_FRAMEWORK = {
         'rest_framework.filters.SearchFilter',
         'rest_framework.filters.OrderingFilter',
     ],
-    'SEARCH_PARAM': 'search',
-    'ORDERING_PARAM': 'ordering',
+    # 'SEARCH_PARAM': 'search',
+    # 'ORDERING_PARAM': 'ordering',
+    'DEFAULT_PAGINATION_CLASS': 'chats.pagination.CustomMessagePagination',
+    'PAGE_SIZE': 20,
 }
 
 

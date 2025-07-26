@@ -3,6 +3,7 @@ from rest_framework.response import Response
 from .models import Conversation, Message
 from .serializers import ConversationSerializer, MessageSerializer
 from rest_framework.permissions import IsAuthenticated
+from django.shortcuts import get_object_or_404
 from rest_framework.generics import RetrieveAPIView
 from .permissions import IsMessageOwner
 from rest_framework.views import APIView
@@ -59,27 +60,46 @@ class ConversationViewSet(viewsets.ModelViewSet):
 
 class MessageViewSet(viewsets.ModelViewSet):
     """
-    ViewSet for listing, retrieving, and sending messages.
-
-    Endpoints:
-        GET    /messages/              -> list all messages
-        POST   /messages/              -> send a new message to a conversation
-        GET    /messages/{id}/         -> retrieve a specific message
+    ViewSet for listing, retrieving, sending, and managing messages.
     """
     queryset = Message.objects.all()
     serializer_class = MessageSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated,
+                          IsParticipantOfConversation]
     filter_backends = [filters.SearchFilter, filters.OrderingFilter]
     search_fields = ['body', 'sender__email']
     ordering_fields = ['sent_at']
 
+    def get_queryset(self):
+        # Only return messages in conversations the user is a participant of
+        return Message.objects.filter(conversation__participants=self.request.user)
+
     def perform_create(self, serializer):
-        serializer.save(sender=self.request.user)
+        conversation_id = self.request.data.get("conversation")
+        conversation = get_object_or_404(Conversation, id=conversation_id)
+
+        if self.request.user not in conversation.participants.all():
+            # If user is not a participant, block message creation
+            raise permissions.PermissionDenied(
+                "You are not a participant in this conversation.")
+
+        serializer.save(sender=self.request.user, conversation=conversation)
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        message = serializer.save(sender=request.user)
+
+        conversation_id = serializer.validated_data.get("conversation").id
+        conversation = get_object_or_404(Conversation, id=conversation_id)
+
+        if request.user not in conversation.participants.all():
+            return Response(
+                {"detail": "You are not a participant of this conversation."},
+                status=status.HTTP_403_FORBIDDEN
+            )
+
+        message = serializer.save(
+            sender=request.user, conversation=conversation)
         return Response(
             MessageSerializer(message).data,
             status=status.HTTP_201_CREATED

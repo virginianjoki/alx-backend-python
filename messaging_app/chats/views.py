@@ -7,6 +7,7 @@ from rest_framework.generics import RetrieveAPIView
 from .permissions import IsMessageOwner
 from rest_framework.views import APIView
 from rest_framework import permissions
+from .permissions import IsParticipantOfConversation
 
 
 class MessageDetailView(RetrieveAPIView):
@@ -18,6 +19,16 @@ class MessageDetailView(RetrieveAPIView):
 class YourMessageView(APIView):
     permission_classes = [IsAuthenticated]
     ...
+
+
+class MessageViewSet(viewsets.ModelViewSet):
+    queryset = Message.objects.all()
+    serializer_class = MessageSerializer
+    permission_classes = [IsAuthenticated, IsParticipantOfConversation]
+
+    def get_queryset(self):
+        # Filter only messages from conversations the user is part of
+        return Message.objects.filter(conversation__participants=self.request.user)
 
 
 class ConversationViewSet(viewsets.ModelViewSet):

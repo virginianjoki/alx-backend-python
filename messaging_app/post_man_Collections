@@ -1,67 +1,194 @@
 {
-  "token_response": {
-    "access": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9...",
-    "refresh": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9..."
+  "info": {
+    "name": "Messaging App API",
+    "_postman_id": "1a2b3c4d-5678-90ab-cdef-1234567890ab",
+    "description": "Postman collection to test JWT auth, conversation creation, message sending, and fetching.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
-  "conversations_list": [
+  "item": [
     {
-      "id": 1,
-      "title": "Project Discussion",
-      "participants": [
+      "name": "Auth",
+      "item": [
         {
-          "id": 2,
-          "username": "alice"
-        },
-        {
-          "id": 3,
-          "username": "bob"
+          "name": "JWT Token Login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"your_username\",\n  \"password\": \"your_password\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/token/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "token"
+              ]
+            }
+          }
         }
-      ],
-      "created_at": "2025-07-27T20:00:00Z"
+      ]
     },
     {
-      "id": 2,
-      "title": "Weekend Plans",
-      "participants": [
+      "name": "Conversations",
+      "item": [
         {
-          "id": 2,
-          "username": "alice"
+          "name": "Create Conversation",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"participant_ids\": [\n    \"uuid-1\",\n    \"uuid-2\"\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/conversations/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "conversations"
+              ]
+            }
+          }
         },
         {
-          "id": 4,
-          "username": "charlie"
+          "name": "Fetch Conversations",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/conversations/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "conversations"
+              ]
+            }
+          }
         }
-      ],
-      "created_at": "2025-07-26T10:30:00Z"
+      ]
+    },
+    {
+      "name": "Messages",
+      "item": [
+        {
+          "name": "Send Message",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"message_body\": \"Hello from Postman!\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/conversations/<conversation_uuid>/messages/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "conversations",
+                "<conversation_uuid>",
+                "messages"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Fetch Messages",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/conversations/<conversation_uuid>/messages/?page=1",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "conversations",
+                "<conversation_uuid>",
+                "messages"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Unauthorized Access",
+      "item": [
+        {
+          "name": "Try Fetching Conversations without Token",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/conversations/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "conversations"
+              ]
+            }
+          }
+        }
+      ]
     }
   ],
-  "conversation_detail": {
-    "id": 1,
-    "title": "Project Discussion",
-    "participants": [
-      {
-        "id": 2,
-        "username": "alice"
-      },
-      {
-        "id": 3,
-        "username": "bob"
-      }
-    ],
-    "created_at": "2025-07-27T20:00:00Z"
-  },
-  "conversation_1_messages": [
+  "event": [],
+  "variable": [
     {
-      "id": 1,
-      "sender": {
-        "id": 2,
-        "username": "alice"
-      },
-      "content": "Hey Bob, did you finish the report?",
-      "timestamp": "2025-07-27T20:15:00Z"
+      "key": "base_url",
+      "value": "http://127.0.0.1:8000/api"
     },
     {
-      "id": 2,
-      "sender": {
-        "id": 3,
-        "username": "bob"
+      "key": "token",
+      "value": ""
+    }
+  ]
+}
+Thank you!Thanks, I'll check it out.What is this?
+

@@ -27,8 +27,8 @@ class User(AbstractUser):
     phone_number = models.CharField(max_length=20, null=True, blank=True)
 
     ROLE_CHOICES = [
-        ('guest', 'Guest'),
-        ('host', 'Host'),
+        ('moderator', 'Moderator'),
+        ('user', 'User'),
         ('admin', 'Admin'),
     ]
     role = models.CharField(

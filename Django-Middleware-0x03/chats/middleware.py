@@ -4,6 +4,25 @@ import logging
 from datetime import datetime, timedelta
 from django.http import HttpResponseForbidden
 from django.http import HttpResponseTooManyRequests
+# chats/middleware.py
+
+from django.http import HttpResponseForbidden
+
+
+class RolepermissionMiddleware:
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        protected_paths = ['/moderate/', '/admin-actions/', '/chat/delete/']
+
+        # Check if request is for a protected path
+        if any(request.path.startswith(p) for p in protected_paths):
+            user = request.user
+            if not user.is_authenticated or user.role not in ['admin', 'moderator']:
+                return HttpResponseForbidden("You do not have permission to perform this action.")
+
+        return self.get_response(request)
 
 
 class OffensiveLanguageMiddleware:

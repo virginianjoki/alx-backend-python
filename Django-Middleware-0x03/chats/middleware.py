@@ -3,7 +3,8 @@
 import logging
 from datetime import datetime, timedelta
 from django.http import HttpResponseForbidden
-from django.http import HttpResponseTooManyRequests
+from django.http import HttpResponse
+# from django.http import HttpResponseTooManyRequests
 # chats/middleware.py
 
 from django.http import HttpResponseForbidden
@@ -42,7 +43,8 @@ class OffensiveLanguageMiddleware:
                           ts < timedelta(minutes=1)]
 
             if len(timestamps) >= 5:
-                return HttpResponseTooManyRequests("Rate limit exceeded: max 5 messages per minute.")
+                # return HttpResponseTooManyRequests("Rate limit exceeded: max 5 messages per minute.")
+                return HttpResponse("Too many requests", status=429)
 
             # Add current timestamp
             timestamps.append(now)

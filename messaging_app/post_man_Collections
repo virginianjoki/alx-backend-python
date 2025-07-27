@@ -1,1 +1,67 @@
-postman tests
+{
+  "token_response": {
+    "access": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9...",
+    "refresh": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9..."
+  },
+  "conversations_list": [
+    {
+      "id": 1,
+      "title": "Project Discussion",
+      "participants": [
+        {
+          "id": 2,
+          "username": "alice"
+        },
+        {
+          "id": 3,
+          "username": "bob"
+        }
+      ],
+      "created_at": "2025-07-27T20:00:00Z"
+    },
+    {
+      "id": 2,
+      "title": "Weekend Plans",
+      "participants": [
+        {
+          "id": 2,
+          "username": "alice"
+        },
+        {
+          "id": 4,
+          "username": "charlie"
+        }
+      ],
+      "created_at": "2025-07-26T10:30:00Z"
+    }
+  ],
+  "conversation_detail": {
+    "id": 1,
+    "title": "Project Discussion",
+    "participants": [
+      {
+        "id": 2,
+        "username": "alice"
+      },
+      {
+        "id": 3,
+        "username": "bob"
+      }
+    ],
+    "created_at": "2025-07-27T20:00:00Z"
+  },
+  "conversation_1_messages": [
+    {
+      "id": 1,
+      "sender": {
+        "id": 2,
+        "username": "alice"
+      },
+      "content": "Hey Bob, did you finish the report?",
+      "timestamp": "2025-07-27T20:15:00Z"
+    },
+    {
+      "id": 2,
+      "sender": {
+        "id": 3,
+        "username": "bob"

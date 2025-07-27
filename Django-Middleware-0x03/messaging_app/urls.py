@@ -22,10 +22,11 @@ from django.urls import path, include
 # from rest_framework_nested import routers
 from rest_framework_nested import routers
 from chats.views import ConversationViewSet, MessageViewSet
-# from rest_framework_simplejwt.views import (
-#     TokenObtainPairView,
-#     TokenRefreshView,
-# )
+from rest_framework.authtoken.views import obtain_auth_token
+from rest_framework_simplejwt.views import (
+    TokenObtainPairView,
+    TokenRefreshView,
+)
 
 router = routers.DefaultRouter()
 router.register(r'conversations', ConversationViewSet,
@@ -39,9 +40,10 @@ convo_router.register(r'messages', MessageViewSet,
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/', include('chats.urls')),
     path('api/', include(convo_router.urls)),
-#     path('api-auth/', include('rest_framework.urls')), 
-#     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
-#     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'), #
+    path('api-auth/', include('rest_framework.urls')),
+    path('api/token/', obtain_auth_token, name='api_token_auth'),
+    path('api/', include('chats.urls')),  # your app's main API routes
+    path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
 ]

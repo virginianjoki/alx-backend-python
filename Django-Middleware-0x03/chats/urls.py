@@ -38,6 +38,7 @@ from rest_framework_nested.routers import NestedDefaultRouter
 from .views import ConversationViewSet, MessageViewSet
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
+
 # Step 1: Main router (parent)
 router = DefaultRouter()
 router.register(r'conversations', ConversationViewSet, basename='conversation')
@@ -53,4 +54,5 @@ urlpatterns = [
     path('', include(conversation_router.urls)),
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    path('api-auth/', include('rest_framework.urls')),
 ]

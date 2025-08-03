@@ -1,3 +1,4 @@
+# Create your models here.
 import uuid
 from django.conf import settings
 from django.db import models
@@ -26,8 +27,8 @@ class User(AbstractUser):
     phone_number = models.CharField(max_length=20, null=True, blank=True)
 
     ROLE_CHOICES = [
-        ('moderator', 'Moderator'),
-        ('user', 'User'),
+        ('guest', 'Guest'),
+        ('host', 'Host'),
         ('admin', 'Admin'),
     ]
     role = models.CharField(
